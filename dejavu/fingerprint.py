@@ -6,6 +6,7 @@ from scipy.ndimage.morphology import (generate_binary_structure,
                                       iterate_structure, binary_erosion)
 import hashlib
 from operator import itemgetter
+import copy
 
 IDX_FREQ_I = 0
 IDX_TIME_J = 1
@@ -84,7 +85,6 @@ def fingerprint(channel_samples, Fs=DEFAULT_FS,
 
     # find local maxima
     local_maxima = get_2D_peaks(arr2D, plot=False, amp_min=amp_min)
-
     # return hashes
     return generate_hashes(local_maxima, fan_value=fan_value)
 
@@ -95,7 +95,6 @@ def get_2D_peaks(arr2D, plot=False, amp_min=DEFAULT_AMP_MIN):
     neighborhood = iterate_structure(struct, PEAK_NEIGHBORHOOD_SIZE)
 
     # find local maxima using our fliter shape
-    #print("maximun filter --#> {}".format(maximum_filter(arr2D, footprint=neighborhood)))
     local_max = maximum_filter(arr2D, footprint=neighborhood) == arr2D
     background = (arr2D == 0)
     eroded_background = binary_erosion(background, structure=neighborhood,
@@ -113,8 +112,8 @@ def get_2D_peaks(arr2D, plot=False, amp_min=DEFAULT_AMP_MIN):
     # filter peaks
     amps = amps.flatten()
     peaks = zip(i, j, amps)
-    peaks_filtered = [x for x in peaks if x[2] > amp_min]  # freq, time, amp
-
+    peaks_list = list(peaks)
+    peaks_filtered = [x for x in peaks_list if x[2] > amp_min]  # freq, time, amp
     # get indices for frequency and time
     frequency_idx = [x[1] for x in peaks_filtered]
     time_idx = [x[0] for x in peaks_filtered]
@@ -129,7 +128,6 @@ def get_2D_peaks(arr2D, plot=False, amp_min=DEFAULT_AMP_MIN):
         ax.set_title("Spectrogram")
         plt.gca().invert_yaxis()
         plt.show()
-
     return zip(frequency_idx, time_idx)
 
 
@@ -139,33 +137,26 @@ def generate_hashes(peaks, fan_value=DEFAULT_FAN_VALUE):
        sha1_hash[0:20]    time_offset
     [(e05b341a9b77a51fd26, 32), ... ]
     """
+    peaksTemp =copy.deepcopy(peaks)
     if PEAK_SORT:
+        # sorted by first element
         try:
-            peaks.sort(key=itemgetter(1))
+            peaks.sort(key=itemgetter(1))#Python 2
         except:
-            sorted(peaks, key=itemgetter(1))
-    # python3
-    peaks_list =list(peaks)
-    #print("peak zip {}".format(peaks))
-    #print("peaklist len {}".format(len(peaks_list)))
+            peaks_list=sorted(peaksTemp, key=itemgetter(1))# Python 3
     
-    #for enum,i in enumerate(peaks):
-        #print("peak value {}".format(i))
-        #print("peak count {}".format(enum))
     for i in range(len(peaks_list)):
         for j in range(1, fan_value):
             if (i + j) < len(peaks_list):
                 
-                freq1 = peaks[i][IDX_FREQ_I]
+                freq1 = peaks_list[i][IDX_FREQ_I]
                 freq1_list = peaks_list[i][IDX_FREQ_I]
-                #print("freq1 {}".format(freq1))
-                #print("freq1list {}".format(freq1_list))
-                freq2 = peaks[i + j][IDX_FREQ_I]
-                t1 = peaks[i][IDX_TIME_J]
-                t2 = peaks[i + j][IDX_TIME_J]
+                freq2 = peaks_list[i + j][IDX_FREQ_I]
+                t1 = peaks_list[i][IDX_TIME_J]
+                t2 = peaks_list[i + j][IDX_TIME_J]
                 t_delta = t2 - t1
 
                 if t_delta >= MIN_HASH_TIME_DELTA and t_delta <= MAX_HASH_TIME_DELTA:
                     h = hashlib.sha1(
-                        "%s|%s|%s" % (str(freq1), str(freq2), str(t_delta)))
+                        str("%s|%s|%s" % (str(freq1), str(freq2), str(t_delta))).encode("utf-8"))
                     yield (h.hexdigest()[0:FINGERPRINT_REDUCTION], t1)

@@ -95,14 +95,17 @@ def get_2D_peaks(arr2D, plot=False, amp_min=DEFAULT_AMP_MIN):
     neighborhood = iterate_structure(struct, PEAK_NEIGHBORHOOD_SIZE)
 
     # find local maxima using our fliter shape
+    #print("maximun filter --#> {}".format(maximum_filter(arr2D, footprint=neighborhood)))
     local_max = maximum_filter(arr2D, footprint=neighborhood) == arr2D
     background = (arr2D == 0)
     eroded_background = binary_erosion(background, structure=neighborhood,
                                        border_value=1)
 
     # Boolean mask of arr2D with True at peaks
-    detected_peaks = local_max - eroded_background
-
+    try:
+        detected_peaks = local_max - eroded_background
+    except:
+        detected_peaks = local_max ^ eroded_background
     # extract peaks
     amps = arr2D[detected_peaks]
     j, i = np.where(detected_peaks)
@@ -137,13 +140,26 @@ def generate_hashes(peaks, fan_value=DEFAULT_FAN_VALUE):
     [(e05b341a9b77a51fd26, 32), ... ]
     """
     if PEAK_SORT:
-        peaks.sort(key=itemgetter(1))
-
-    for i in range(len(peaks)):
+        try:
+            peaks.sort(key=itemgetter(1))
+        except:
+            sorted(peaks, key=itemgetter(1))
+    # python3
+    peaks_list =list(peaks)
+    #print("peak zip {}".format(peaks))
+    #print("peaklist len {}".format(len(peaks_list)))
+    
+    #for enum,i in enumerate(peaks):
+        #print("peak value {}".format(i))
+        #print("peak count {}".format(enum))
+    for i in range(len(peaks_list)):
         for j in range(1, fan_value):
-            if (i + j) < len(peaks):
+            if (i + j) < len(peaks_list):
                 
                 freq1 = peaks[i][IDX_FREQ_I]
+                freq1_list = peaks_list[i][IDX_FREQ_I]
+                #print("freq1 {}".format(freq1))
+                #print("freq1list {}".format(freq1_list))
                 freq2 = peaks[i + j][IDX_FREQ_I]
                 t1 = peaks[i][IDX_TIME_J]
                 t2 = peaks[i + j][IDX_TIME_J]

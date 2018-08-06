@@ -1,6 +1,6 @@
 from dejavu.database import get_database, Database
 import dejavu.decoder as decoder
-import fingerprint
+from .fingerprint import *
 import multiprocessing
 import os
 import traceback
@@ -58,16 +58,18 @@ class Dejavu(object):
 
             # don't refingerprint already fingerprinted files
             if decoder.unique_hash(filename) in self.songhashes_set:
-                print "%s already fingerprinted, continuing..." % filename
+                print ("%s already fingerprinted, continuing..." % filename)
                 continue
 
             filenames_to_fingerprint.append(filename)
 
         # Prepare _fingerprint_worker input
+        #print("worker_input value", filenames_to_fingerprint, [self.limit] * len(filenames_to_fingerprint))
         worker_input = zip(filenames_to_fingerprint,
                            [self.limit] * len(filenames_to_fingerprint))
 
         # Send off our tasks
+        #print("values file", _fingerprint_worker, worker_input)
         iterator = pool.imap_unordered(_fingerprint_worker,
                                        worker_input)
 
@@ -99,7 +101,7 @@ class Dejavu(object):
         song_name = song_name or songname
         # don't refingerprint already fingerprinted files
         if song_hash in self.songhashes_set:
-            print "%s already fingerprinted, continuing..." % song_name
+            print ("%s already fingerprinted, continuing..." % song_name)
         else:
             song_name, hashes, file_hash = _fingerprint_worker(
                 filepath,
@@ -112,8 +114,8 @@ class Dejavu(object):
             self.db.set_song_fingerprinted(sid)
             self.get_fingerprinted_songs()
 
-    def find_matches(self, samples, Fs=fingerprint.DEFAULT_FS):
-        hashes = fingerprint.fingerprint(samples, Fs=Fs)
+    def find_matches(self, samples, Fs=DEFAULT_FS):
+        hashes = fingerprint(samples, Fs=Fs)
         return self.db.return_matches(hashes)
 
     def align_matches(self, matches):
@@ -186,7 +188,7 @@ def _fingerprint_worker(filename, limit=None, song_name=None):
         print("Fingerprinting channel %d/%d for %s" % (channeln + 1,
                                                        channel_amount,
                                                        filename))
-        hashes = fingerprint.fingerprint(channel, Fs=Fs)
+        hashes = fingerprint(channel, Fs=Fs)
         print("Finished channel %d/%d for %s" % (channeln + 1, channel_amount,
                                                  filename))
         result |= set(hashes)

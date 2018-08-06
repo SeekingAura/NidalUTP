@@ -1,6 +1,16 @@
 from __future__ import absolute_import
-from itertools import izip_longest
-import Queue
+try:
+    from itertools import zip_longest as zip_longest
+except:
+    from itertools import izip_longest as zip_longest
+try:
+    import queue
+    from queue import Empty
+    from queue import Full
+except:
+    from multiprocessing import Queue as queue
+    from Queue import Empty
+    from Queue import Full
 
 import MySQLdb as mysql
 from MySQLdb.cursors import DictCursor
@@ -312,7 +322,7 @@ class SQLDatabase(Database):
 def grouper(iterable, n, fillvalue=None):
     args = [iter(iterable)] * n
     return (filter(None, values) for values
-            in izip_longest(fillvalue=fillvalue, *args))
+            in zip_longest(fillvalue=fillvalue, *args))
 
 
 def cursor_factory(**factory_options):
@@ -333,14 +343,17 @@ class Cursor(object):
         cur.execute(query)
     ```
     """
-    _cache = Queue.Queue(maxsize=5)
+    try:
+        _cache = queue.Queue(maxsize=5)
+    except:
+        _cache = queue(maxsize=5)
 
     def __init__(self, cursor_type=mysql.cursors.Cursor, **options):
         super(Cursor, self).__init__()
 
         try:
             conn = self._cache.get_nowait()
-        except Queue.Empty:
+        except Empty:
             conn = mysql.connect(**options)
         else:
             # Ping the connection before using it from the cache.
@@ -352,7 +365,7 @@ class Cursor(object):
 
     @classmethod
     def clear_cache(cls):
-        cls._cache = Queue.Queue(maxsize=5)
+        cls._cache = queue.queue(maxsize=5)
 
     def __enter__(self):
         self.cursor = self.conn.cursor(self.cursor_type)
@@ -369,5 +382,5 @@ class Cursor(object):
         # Put it back on the queue
         try:
             self._cache.put_nowait(self.conn)
-        except Queue.Full:
+        except Full:
             self.conn.close()

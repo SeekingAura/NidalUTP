@@ -1,4 +1,4 @@
-import dejavu.fingerprint as fingerprint
+from .fingerprint import *
 import dejavu.decoder as decoder
 import numpy as np
 import pyaudio
@@ -9,7 +9,7 @@ class BaseRecognizer(object):
 
     def __init__(self, dejavu):
         self.dejavu = dejavu
-        self.Fs = fingerprint.DEFAULT_FS
+        self.Fs = DEFAULT_FS
 
     def _recognize(self, *data):
         matches = []
@@ -38,6 +38,7 @@ class FileRecognizer(BaseRecognizer):
         return match
 
     def recognize(self, filename):
+        print("archivo {}".format(filename))
         return self.recognize_file(filename)
 
 

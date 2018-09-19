@@ -28,8 +28,8 @@ if __name__ == '__main__':
 
 
 	# Recognize audio from a file
-	# song = djv.recognize(FileRecognizer, "test/asd.mp3")
-	# print ("From file we recognized: %s\n" % song)
+	song = djv.recognize(FileRecognizer, "test/asd.mp3")
+	print ("From file we recognized: %s\n" % song)
 
 	# # Or recognize audio from your microphone for `secs` seconds
 	# secs = 5
@@ -40,6 +40,6 @@ if __name__ == '__main__':
 	# 	print ("From mic with %d seconds we recognized: %s\n" % (secs, song))
 
 	# # Or use a recognizer without the shortcut, in anyway you would like
-	# recognizer = FileRecognizer(djv)
-	# song = recognizer.recognize_file("test/asd.mp3")
+	#recognizer = FileRecognizer(djv)
+	#song = recognizer.recognize_file("test/asd.mp3")
 	# print ("No shortcut, we recognized: %s\n" % song)

@@ -78,7 +78,6 @@ def fingerprint(channel_samples, Fs=DEFAULT_FS,
         Fs=Fs,
         window=mlab.window_hanning,
         noverlap=int(wsize * wratio))[0]
-
     # apply log transform since specgram() returns linear array
     arr2D = 10 * np.log10(arr2D)
     arr2D[arr2D == -np.inf] = 0  # replace infs with zeros
@@ -137,12 +136,14 @@ def generate_hashes(peaks, fan_value=DEFAULT_FAN_VALUE):
        sha1_hash[0:20]    time_offset
     [(e05b341a9b77a51fd26, 32), ... ]
     """
-    peaksTemp =copy.deepcopy(peaks)
+    
     if PEAK_SORT:
         # sorted by first element
         try:
             peaks.sort(key=itemgetter(1))#Python 2
+            peaks_list=peaks
         except:
+            peaksTemp =copy.deepcopy(peaks)
             peaks_list=sorted(peaksTemp, key=itemgetter(1))# Python 3
     
     for i in range(len(peaks_list)):

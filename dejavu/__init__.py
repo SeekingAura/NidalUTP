@@ -152,9 +152,9 @@ class Dejavu(object):
             return None
 
         # return match info
-        nseconds = round(float(largest) / fingerprint.DEFAULT_FS *
-                         fingerprint.DEFAULT_WINDOW_SIZE *
-                         fingerprint.DEFAULT_OVERLAP_RATIO, 5)
+        nseconds = round(float(largest) / DEFAULT_FS *
+                         DEFAULT_WINDOW_SIZE *
+                         DEFAULT_OVERLAP_RATIO, 5)
         song = {
             Dejavu.SONG_ID : song_id,
             Dejavu.SONG_NAME : songname,

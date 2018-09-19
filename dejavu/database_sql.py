@@ -1,13 +1,15 @@
 from __future__ import absolute_import
 try:
-    from itertools import zip_longest as zip_longest
+    from itertools import zip_longest as zip_longest#Python2
 except:
-    from itertools import izip_longest as zip_longest
+    from itertools import izip_longest as zip_longest#Python3
 try:
+    #Python2
     import queue
     from queue import Empty
     from queue import Full
 except:
+    #Python3
     from multiprocessing import Queue as queue
     from Queue import Empty
     from Queue import Full
@@ -16,7 +18,7 @@ import MySQLdb as mysql
 from MySQLdb.cursors import DictCursor
 
 from dejavu.database import Database
-
+import copy
 
 class SQLDatabase(Database):
     """
@@ -303,9 +305,21 @@ class SQLDatabase(Database):
             for split_values in grouper(values, 1000):
                 # Create our IN part of the query
                 query = self.SELECT_MULTIPLE
-                query = query % ', '.join(['UNHEX(%s)'] * len(split_values))
-
-                cur.execute(query, split_values)
+                
+                #print("split val before ->", list(split_valuesTemp))
+                try:
+                    query = query % ', '.join(['UNHEX(%s)'] * len(split_values))# python2
+                except:
+                    split_valuesTemp =copy.deepcopy(split_values)#Copy because split_valuesTemp get's empy when cast
+                    split_values_list = list(split_valuesTemp)
+                    query = query % ', '.join(['UNHEX(%s)'] * len(split_values_list))# python3
+                #print("split val after ->", list(split_valuesTemp))
+                #print("query data", query)
+                #exit(1)
+                try: 
+                    cur.execute(query, split_values)#Python 2
+                except:
+                    cur.execute(query, split_values_list)#Python 3
 
                 for hash, sid, offset in cur:
                     # (sid, db_offset - song_sampled_offset)

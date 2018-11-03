@@ -48,7 +48,6 @@ def read(filename, limit=None):
     """
     # pydub does not support 24-bit wav files, use wavio when this occurs
     try:
-        #print("AudioSegmento {}".format(filename))
         audiofile = AudioSegment.from_file(filename)
 
         if limit:

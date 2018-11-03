@@ -12,7 +12,7 @@ config = {
 "database": {
 	"host": "127.0.0.1",
 	"user": "root",
-	"passwd": "97032609604cm", 
+	"passwd": "1234", 
 	"db": "avesscheme"
 }
 }

@@ -3,7 +3,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 from dejavu import Dejavu
-from dejavu.recognize import FileRecognizer, MicrophoneRecognizer
+from dejavu.recognize import FileRecognizer
 import os
 import sys
 
@@ -25,7 +25,7 @@ if __name__ == '__main__':
 	djv = Dejavu(config)
 
 	# Fingerprint all the mp3's in the directory we give it
-	##djv.fingerprint_directory("mp3", [".mp3"])
+	djv.fingerprint_directory("mp3", [".mp3"])
 	#print("actual ->", os.getcwd()+chr(92)+"test")
 
 

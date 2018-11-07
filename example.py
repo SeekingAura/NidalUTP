@@ -25,8 +25,7 @@ if __name__ == '__main__':
 	djv = Dejavu(config)
 
 	# Fingerprint all the mp3's in the directory we give it
-	djv.fingerprint_directory("mp3", [".mp3"])
-	#print("actual ->", os.getcwd()+chr(92)+"test")
+	# djv.fingerprint_directory("mp3 prueba", [".mp3"]
 
 
 	# Recognize audio from a file
@@ -34,22 +33,30 @@ if __name__ == '__main__':
 	confidenceOverall=0
 	for result in results:
 		confidenceOverall+=result.get("confidence")
-	
-	print ("Del archivo se ha reconocido:")
+
+
+	resultsOverall={}
+
+	#full name of file, test mode
+	"""
 	for result in results:
-		print ("ave {} se estima ser %{:0.2f}".format(
-			result.get("song_name"),
-			(result.get("confidence")/confidenceOverall)*100))
+		if(result.get("song_name") in resultsOverall):
+			resultsOverall[result.get("song_name")]+=result.get("confidence")
+		else:
+			resultsOverall[result.get("song_name")]=result.get("confidence")
 
-	# # Or recognize audio from your microphone for `secs` seconds
-	# secs = 5
-	# song = djv.recognize(MicrophoneRecognizer, seconds=secs)
-	# if song is None:
-	# 	print ("Nothing recognized -- did you play the song out loud so your mic could hear it? :)")
-	# else:
-	# 	print ("From mic with %d seconds we recognized: %s\n" % (secs, song))
+	## only name of birds, production mode
+	"""
+	for result in results:
+		if(result.get("song_name").split("-")[0] in resultsOverall):
+			resultsOverall[result.get("song_name").split("-")[0]]+=result.get("confidence")
+		else:
+			resultsOverall[result.get("song_name").split("-")[0]]=result.get("confidence")
+	
+	print("data ->", resultsOverall)
+	results=[]
+	for result in sorted(resultsOverall.items(), key=lambda kv: kv[1], reverse=True):#order by value (number of confidences)
+		print("ave {} se estima ser {:0.2f}%".format(result[0], (result[1]/confidenceOverall)*100))
+		results.append([result[0], "{:0.2f}%".format((result[1]/confidenceOverall)*100)])
+	# print(results)
 
-	# # Or use a recognizer without the shortcut, in anyway you would like
-	#recognizer = FileRecognizer(djv)
-	#song = recognizer.recognize_file("test/asd.mp3")
-	# print ("No shortcut, we recognized: %s\n" % song)

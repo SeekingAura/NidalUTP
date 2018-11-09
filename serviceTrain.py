@@ -37,26 +37,26 @@ if __name__ == '__main__':
 
 	resultsOverall={}
 
-	#full name of file, test mode
-	"""
-	for result in results:
-		if(result.get("song_name") in resultsOverall):
-			resultsOverall[result.get("song_name")]+=result.get("confidence")
-		else:
-			resultsOverall[result.get("song_name")]=result.get("confidence")
+	testMode=False
+	if(testMode):
+		#full name of file, test mode
+		for result in results:
+			if(result.get("song_name") in resultsOverall):
+				resultsOverall[result.get("song_name")]+=result.get("confidence")
+			else:
+				resultsOverall[result.get("song_name")]=result.get("confidence")
 
-	## only name of birds, production mode
-	"""
-	for result in results:
-		if(result.get("song_name").split("-")[0] in resultsOverall):
-			resultsOverall[result.get("song_name").split("-")[0]]+=result.get("confidence")
-		else:
-			resultsOverall[result.get("song_name").split("-")[0]]=result.get("confidence")
-	
-	print("data ->", resultsOverall)
-	results=[]
+	else:
+
+		## only name of birds, production mode
+		"""
+		for result in results:
+			if(result.get("song_name").split("-")[0] in resultsOverall):
+				resultsOverall[result.get("song_name").split("-")[0]]+=result.get("confidence")
+			else:
+				resultsOverall[result.get("song_name").split("-")[0]]=result.get("confidence")
+		"""
+
 	for result in sorted(resultsOverall.items(), key=lambda kv: kv[1], reverse=True):#order by value (number of confidences)
 		print("ave {} se estima ser {:0.2f}%".format(result[0], (result[1]/confidenceOverall)*100))
-		results.append([result[0], "{:0.2f}%".format((result[1]/confidenceOverall)*100)])
-	# print(results)
 

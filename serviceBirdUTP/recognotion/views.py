@@ -36,7 +36,6 @@ def useRecognotion(request):
 	if(request.method == 'POST'):
 		if("ionicfile" in request.FILES):
 			sound = AudioSegment.from_file(request.FILES['ionicfile'].temporary_file_path())
-			
 			sound= sound.set_frame_rate(44100)
 			sound = sound.set_channels(2)
 			sound.export(request.FILES['ionicfile'].temporary_file_path(), format="mp3", bitrate="128k")

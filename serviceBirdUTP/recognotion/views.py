@@ -69,7 +69,7 @@ def useRecognotion(request):
 			for result in sorted(resultsOverall.items(), key=lambda kv: kv[1], reverse=True):#order by value (number of confidences)
 				## print result with Style
 				#print("ave {} se estima ser {:0.2f}%".format(result[0], (result[1]/confidenceOverall)*100))
-				results.append([result[0], "{:0.2f}%".format((result[1]/confidenceOverall)*100)]})
+				results.append([result[0], "{:0.2f}%".format((result[1]/confidenceOverall)*100)])
 			
 			# play recording (test)
 			# os.system("ffplay {}".format(request.FILES['ionicfile'].temporary_file_path()))

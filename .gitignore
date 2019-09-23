@@ -114,6 +114,7 @@ venv.bak/
 
 # Test folder
 /test
+/pre-test
 
 # Stadistical results csv
 /Stadistical Dejavu-Bird.csv

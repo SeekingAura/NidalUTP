@@ -111,3 +111,9 @@ venv.bak/
 .mypy_cache/
 
 .vscode/
+
+# Test folder
+/test
+
+# Stadistical results csv
+/Stadistical Dejavu-Bird.csv

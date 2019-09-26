@@ -70,6 +70,9 @@ if __name__ == '__main__':
 
 	# Open files with extension .mp3 from folder test
 	for fileName, fileExtension in find_files(sys.argv[1],["mp3"]):
+		# Format print for separate print results on terminal
+		print("-"*30)
+
 		print(fileName)
 
 		# Open any audio file
@@ -94,7 +97,7 @@ if __name__ == '__main__':
 		# os.system("mv {} {}".format("'"+fileName+"'", "'"+folderTest+"/"+folderBird+"/"+name1+" "+name2+"-"+number.lower()+"'"))
 
 		# Get respective name of bird
-		birdName=fileName.split("-")[0].split("/")[2].title()
+		birdName=fileName.split("/")[2].split("-")[0].title()
 
 		if(birdName in birdList):
 			# Get all confidences from analysis
@@ -110,22 +113,39 @@ if __name__ == '__main__':
 				else:
 					resultsOverall[result.get("song_name").split("-")[0]]=result.get("confidence")
 			
-			print("-"*30)
-			for key in resultsOverall:
-				print("ave {}, porcentaje {}%, confidences {}".format(key, (resultsOverall.get(key)/confidenceOverall)*100, resultsOverall.get(key)))
-			print("-"*30)
+			
+			
 
+			# Open file
 			csvFile=open("Stadistical Dejavu-Bird.csv", "a", encoding="utf-8")
-			csvFile.write("{}, {}, {}, {}, {}\n".format(fileName, birdName, 
-				(resultsOverall.get(birdName)/confidenceOverall)*100, resultsOverall.get(birdName), confidenceOverall
+
+			# Case if confidences are none (very noise audio)
+			if(confidenceOverall==0):
+				for key in resultsOverall:
+					print("ave {}, porcentaje {}%, confidences {}".format(key, 0, resultsOverall.get(key)))
+			
+				csvFile.write("{}, {}, {}, {}, {}\n".format(fileName, birdName, 
+				0, resultsOverall.get(birdName), confidenceOverall
 			))
+			else:
+				for key in resultsOverall:
+					print("ave {}, porcentaje {}%, confidences {}".format(key, 
+						(resultsOverall.get(key)/confidenceOverall), resultsOverall.get(key)
+						)
+					)
+			
+				csvFile.write("{}, {}, {}, {}, {}\n".format(fileName, birdName, 
+				(resultsOverall.get(birdName)/confidenceOverall), resultsOverall.get(birdName), confidenceOverall
+			))
+
+			# Close file
 			csvFile.close()
 		else:
 			print("ERROR, not found name of bird in DB with file {}, probably dont have a correct \
 				format to read on system Dejavu-Bird or name of bird are not write correct".format(fileName))
 
-			
-			
+		# Format print for separate results on terminal
+		print("-"*30)
 						
 
 	# resultsOverall={}
